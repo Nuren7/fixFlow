@@ -120,7 +120,6 @@ function App() {
         <section className="auth-panel">
           <div className="auth-form-wrap">
             <div className="brand-lockup">
-              <span className="brand-mark">F</span>
               <span>FixFlow</span>
             </div>
             <div className="auth-heading">
