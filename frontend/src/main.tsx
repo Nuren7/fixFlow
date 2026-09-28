@@ -57,6 +57,8 @@ function App() {
   };
 
   useEffect(() => {
+    const handleAuthExpired = () => setSession(null);
+    window.addEventListener("fixflow-auth-expired", handleAuthExpired);
     fetchHealth()
       .then((data) => setHealth(data.status ?? "UP"))
       .catch(() => setHealth("Offline"));
@@ -64,6 +66,8 @@ function App() {
       .then(setOwners)
       .catch(() => setOwners([]));
     if (session) refreshDashboard();
+    return () =>
+      window.removeEventListener("fixflow-auth-expired", handleAuthExpired);
   }, [session]);
 
   const submitAuth = async (event: React.FormEvent) => {

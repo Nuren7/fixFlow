@@ -9,7 +9,16 @@ async function request(path: string, options: RequestInit = {}) {
   headers.set('Content-Type', 'application/json');
   if (token) headers.set('Authorization', `Bearer ${token}`);
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-  if (!response.ok) throw new Error((await response.text()) || `Request failed (${response.status})`);
+  if (!response.ok) {
+    const message = (await response.text()) || `Request failed (${response.status})`;
+    if ((response.status === 401 || response.status === 403) && path !== '/owners') {
+      localStorage.removeItem('fixflow_token');
+      localStorage.removeItem('fixflow_session');
+      window.dispatchEvent(new Event('fixflow-auth-expired'));
+      throw new Error('Your session has expired. Please sign in again.');
+    }
+    throw new Error(message);
+  }
   return response.json();
 }
 
