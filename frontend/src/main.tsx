@@ -308,7 +308,6 @@ function App() {
           </div>
           <div className="top-actions">
             <span className="status-pill">
-              <span className="status-dot" /> API {health}
             </span>
             <span className="header-date">Monday, September 28</span>
           </div>

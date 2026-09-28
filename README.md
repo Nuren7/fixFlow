@@ -43,6 +43,9 @@ fixFlow/
 │   ├── src/api.ts
 │   ├── src/styles.css
 │   └── package.json
+├── .github/workflows/
+│   ├── backend-ci.yml
+│   └── frontend-ci.yml
 ├── Dockerfile
 └── README.md
 ```
@@ -103,26 +106,6 @@ Set this in Vercel for Production, Preview, and Development:
 ```env
 VITE_API_BASE_URL=https://fixflow-tr8i.onrender.com/api
 ```
-
-## Database setup
-
-The initial schema is in `backend/src/main/resources/db/migration/V1__create_fixflow_schema.sql`.
-
-The owner relationship is in `backend/src/main/resources/db/migration/V2__add_request_owner.sql`.
-
-Because production Flyway is currently disabled to avoid the Neon/PostgreSQL startup compatibility issue, run this SQL once in the Neon SQL editor if the column has not already been created:
-
-```sql
-ALTER TABLE maintenance_requests
-ADD COLUMN IF NOT EXISTS owner_id BIGINT;
-
-ALTER TABLE maintenance_requests
-ADD CONSTRAINT fk_requests_owner
-FOREIGN KEY (owner_id) REFERENCES users(id);
-```
-
-If the foreign-key constraint already exists, do not run the second statement again.
-
 ## User flow
 
 1. Create a Property owner account.
@@ -191,20 +174,9 @@ Import the same repository and set:
 
 Add `VITE_API_BASE_URL` with the Render API URL, then redeploy.
 
-## Verification commands
+## GitHub Actions CI/CD
 
-Backend tests:
+The repository includes two GitHub Actions workflows in `.github/workflows/`:
 
-```powershell
-cd backend
-mvn test
-```
-
-Frontend production build:
-
-```powershell
-cd frontend
-npm run build
-```
-
-The frontend build output is generated in `frontend/dist`.
+- `backend-ci.yml` runs the backend Maven test suite with Java 17.
+- `frontend-ci.yml` installs the locked npm dependencies and runs the Vite production build.
