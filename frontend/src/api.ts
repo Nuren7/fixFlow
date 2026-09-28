@@ -12,7 +12,7 @@ async function request(path: string, options: RequestInit = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
   if (!response.ok) {
     const message = (await response.text()) || `Request failed (${response.status})`;
-    if ((response.status === 401 || response.status === 403) && path !== '/owners') {
+    if ((response.status === 401 || response.status === 403) && !isPublicRequest) {
       localStorage.removeItem('fixflow_token');
       localStorage.removeItem('fixflow_session');
       window.dispatchEvent(new Event('fixflow-auth-expired'));
