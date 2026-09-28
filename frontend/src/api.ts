@@ -6,8 +6,9 @@ export type Owner = { id: number; username: string };
 async function request(path: string, options: RequestInit = {}) {
   const token = localStorage.getItem('fixflow_token');
   const headers = new Headers(options.headers);
+  const isPublicRequest = path.startsWith('/auth/') || path === '/owners';
   headers.set('Content-Type', 'application/json');
-  if (token) headers.set('Authorization', `Bearer ${token}`);
+  if (token && !isPublicRequest) headers.set('Authorization', `Bearer ${token}`);
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
   if (!response.ok) {
     const message = (await response.text()) || `Request failed (${response.status})`;
