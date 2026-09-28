@@ -1,0 +1,25 @@
+# Java / Spring
+backend/target/
+backend/.gradle/
+backend/build/
+*.class
+*.log
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Docker volumes
+postgres_data/
