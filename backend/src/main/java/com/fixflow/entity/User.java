@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private String location;
 
     @Column(name = "active_jobs")
-    private Integer activeJobs;
+    private Integer activeJobs = 0;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -56,6 +56,7 @@ public class User implements UserDetails {
         this.password = password;
         this.email = email;
         this.role = role;
+        this.activeJobs = 0;
     }
 
     public User(String username, String password, String email, Role role, String primarySkill, String location, Integer activeJobs) {
