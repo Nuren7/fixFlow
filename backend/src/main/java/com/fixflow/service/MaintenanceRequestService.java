@@ -37,21 +37,30 @@ public class MaintenanceRequestService {
         this.requestWorkflowService = requestWorkflowService;
     }
 
-    public List<MaintenanceRequestResponse> getRequests() {
-        return maintenanceRequestRepository.findAll().stream()
+    public List<MaintenanceRequestResponse> getRequests(User authenticatedUser) {
+        List<MaintenanceRequest> requests = authenticatedUser.getRole().name().equals("CUSTOMER")
+            ? maintenanceRequestRepository.findByCustomerOrderByCreatedAtDesc(authenticatedUser)
+            : authenticatedUser.getRole().name().equals("MANAGER")
+                ? maintenanceRequestRepository.findByOwnerOrderByCreatedAtDesc(authenticatedUser)
+                : maintenanceRequestRepository.findAll();
+
+        return requests.stream()
             .map(this::toResponse)
             .toList();
     }
 
-    public MaintenanceRequestResponse createRequest(MaintenanceRequestCreateRequest request) {
-        Property property = propertyRepository.findById(request.propertyId())
+    public MaintenanceRequestResponse createRequest(MaintenanceRequestCreateRequest request, User authenticatedUser) {
+        Property property = request.propertyId() == null ? null : propertyRepository.findById(request.propertyId())
             .orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
-        Unit unit = unitRepository.findById(request.unitId())
+        Unit unit = request.unitId() == null ? null : unitRepository.findById(request.unitId())
             .orElseThrow(() -> new IllegalArgumentException("Unit not found"));
 
-        User customer = userRepository.findById(request.customerId())
+        User customer = request.customerId() == null ? authenticatedUser : userRepository.findById(request.customerId())
             .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        User owner = request.ownerId() == null ? null : userRepository.findById(request.ownerId())
+            .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
 
         MaintenanceRequest entity = new MaintenanceRequest(
             request.title(),
@@ -62,6 +71,7 @@ public class MaintenanceRequestService {
             unit,
             customer
         );
+        entity.setOwner(owner);
 
         MaintenanceRequest saved = maintenanceRequestRepository.save(entity);
         return toResponse(saved);
@@ -94,6 +104,8 @@ public class MaintenanceRequestService {
             request.getProperty() != null ? request.getProperty().getId() : null,
             request.getUnit() != null ? request.getUnit().getId() : null,
             request.getCustomer() != null ? request.getCustomer().getId() : null,
+            request.getOwner() != null ? request.getOwner().getId() : null,
+            request.getOwner() != null ? request.getOwner().getUsername() : null,
             request.getCreatedAt(),
             request.getUpdatedAt()
         );

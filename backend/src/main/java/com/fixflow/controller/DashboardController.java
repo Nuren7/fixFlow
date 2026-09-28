@@ -1,10 +1,12 @@
 package com.fixflow.controller;
 
 import com.fixflow.service.DashboardService;
+import com.fixflow.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.Map;
 
@@ -19,7 +21,7 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard/metrics")
-    public ResponseEntity<Map<String, Object>> metrics() {
-        return ResponseEntity.ok(dashboardService.getMetrics());
+    public ResponseEntity<Map<String, Object>> metrics(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(dashboardService.getMetrics(authenticatedUser));
     }
 }

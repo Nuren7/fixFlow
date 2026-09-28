@@ -14,6 +14,8 @@ public record MaintenanceRequestResponse(
     Long propertyId,
     Long unitId,
     Long customerId,
+    Long ownerId,
+    String ownerName,
     Instant createdAt,
     Instant updatedAt
 ) {}

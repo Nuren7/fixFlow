@@ -10,5 +10,6 @@ public record MaintenanceRequestCreateRequest(
     @NotNull Priority priority,
     Long propertyId,
     Long unitId,
-    Long customerId
+    Long customerId,
+    Long ownerId
 ) {}

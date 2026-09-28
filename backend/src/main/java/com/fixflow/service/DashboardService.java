@@ -2,6 +2,7 @@ package com.fixflow.service;
 
 import com.fixflow.domain.RequestStatus;
 import com.fixflow.entity.MaintenanceRequest;
+import com.fixflow.entity.User;
 import com.fixflow.repository.MaintenanceRequestRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,12 @@ public class DashboardService {
         this.maintenanceRequestRepository = maintenanceRequestRepository;
     }
 
-    public Map<String, Object> getMetrics() {
-        List<MaintenanceRequest> requests = maintenanceRequestRepository.findAll();
+    public Map<String, Object> getMetrics(User authenticatedUser) {
+        List<MaintenanceRequest> requests = authenticatedUser.getRole().name().equals("CUSTOMER")
+            ? maintenanceRequestRepository.findByCustomerOrderByCreatedAtDesc(authenticatedUser)
+            : authenticatedUser.getRole().name().equals("MANAGER")
+                ? maintenanceRequestRepository.findByOwnerOrderByCreatedAtDesc(authenticatedUser)
+                : maintenanceRequestRepository.findAll();
 
         long openRequests = requests.stream().filter(r -> r.getStatus() != RequestStatus.VERIFIED && r.getStatus() != RequestStatus.COMPLETED).count();
         long overdue = requests.stream().filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.VERIFIED).count();

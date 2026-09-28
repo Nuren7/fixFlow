@@ -3,11 +3,13 @@ package com.fixflow.controller;
 import com.fixflow.dto.MaintenanceRequestCreateRequest;
 import com.fixflow.dto.MaintenanceRequestResponse;
 import com.fixflow.dto.StatusUpdateRequest;
+import com.fixflow.entity.User;
 import com.fixflow.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -23,14 +25,15 @@ public class MaintenanceRequestController {
 
     @GetMapping("/requests")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TECHNICIAN', 'CUSTOMER')")
-    public ResponseEntity<List<MaintenanceRequestResponse>> listRequests() {
-        return ResponseEntity.ok(maintenanceRequestService.getRequests());
+    public ResponseEntity<List<MaintenanceRequestResponse>> listRequests(@AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(maintenanceRequestService.getRequests(authenticatedUser));
     }
 
     @PostMapping("/requests")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
-    public ResponseEntity<MaintenanceRequestResponse> createRequest(@Valid @RequestBody MaintenanceRequestCreateRequest request) {
-        return ResponseEntity.ok(maintenanceRequestService.createRequest(request));
+    public ResponseEntity<MaintenanceRequestResponse> createRequest(@Valid @RequestBody MaintenanceRequestCreateRequest request,
+                                                                     @AuthenticationPrincipal User authenticatedUser) {
+        return ResponseEntity.ok(maintenanceRequestService.createRequest(request, authenticatedUser));
     }
 
     @GetMapping("/requests/{id}")

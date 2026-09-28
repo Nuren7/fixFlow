@@ -41,6 +41,10 @@ public class MaintenanceRequest {
     private User customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_technician_id")
     private User assignedTechnician;
 
@@ -133,6 +137,14 @@ public class MaintenanceRequest {
 
     public void setCustomer(User customer) {
         this.customer = customer;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public User getAssignedTechnician() {
